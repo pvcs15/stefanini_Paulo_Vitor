@@ -4,6 +4,8 @@ using Examples.Charge.Application.Interfaces;
 using Examples.Charge.Application.Messages.Request;
 using Examples.Charge.Application.Messages.Response;
 using System.Threading.Tasks;
+using Examples.Charge.Application.Dtos;
+using Examples.Charge.Domain.Aggregates.PersonAggregate;
 
 namespace Examples.Charge.API.Controllers
 {
@@ -11,26 +13,39 @@ namespace Examples.Charge.API.Controllers
     [ApiController]
     public class ExampleController : BaseController
     {
-        private IExampleFacade _facade;
+        private readonly IPersonFacade _personFacade;
 
-        public ExampleController(IExampleFacade facade, IMapper mapper)
+        public ExampleController(IPersonFacade personFacade)
         {
-            _facade = facade;
+            _personFacade = personFacade;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<ExampleListResponse>> Get() => Response(await _facade.FindAllAsync());
-
         [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        public ActionResult Get(int id)
         {
             return Response(null);
         }
+        
 
         [HttpPost]
-        public IActionResult Post([FromBody] ExampleRequest request)
+        public async Task<IActionResult> Post(PersonPhoneDto personPhone)
         {
-            return Response(0, null);
+            var result = await _personFacade.InsertPersonPhone(personPhone);
+            return Ok(new {success = result});
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> Update(PersonPhoneDto personPhone)
+        {
+            var result = await _personFacade.Update(personPhone);
+            return Ok(new {success = result});
+        }
+        
+        [HttpDelete]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var result = await _personFacade.Delete(id);
+            return Ok(new {success = result});
         }
     }
 }

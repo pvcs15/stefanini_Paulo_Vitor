@@ -17,5 +17,35 @@ namespace Examples.Charge.Infra.Data.Repositories
         }
 
         public async Task<IEnumerable<PersonPhone>> FindAllAsync() => await Task.Run(() => _context.PersonPhone);
+        
+        public async Task<PersonPhone> Insert(PersonPhone personPhone)
+        {
+            await _context.PersonPhone.AddAsync(personPhone);
+            await _context.SaveChangesAsync();
+            return personPhone;
+        }
+
+        public async Task<bool> Delete(int id)
+        {
+            var model = await _context.PersonPhone.FindAsync(id);
+            if (model == null)
+            {
+                return false;
+            }
+
+            _context.PersonPhone.Remove(model);
+            return true;
+        }
+
+        public async Task<bool> Update(PersonPhone personPhone)
+        {
+            var model = await _context.PersonPhone.FindAsync(personPhone.BusinessEntityID);
+            if (model == null)
+            {
+                return false;
+            }
+            _context.PersonPhone.Update(personPhone);
+            return true;
+        }
     }
 }
